@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { QuestionForm } from "./QuestionForm";
+import { BatchQuestionForm } from "./BatchQuestionForm";
 import type { Question } from "@/lib/types";
 
 interface QuestionEditorProps {
@@ -28,10 +29,12 @@ export function QuestionEditor({
   const router = useRouter();
   const [questions, setQuestions] = useState<Question[]>(initialQuestions);
   const [showForm, setShowForm] = useState(false);
+  const [showBatchForm, setShowBatchForm] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
 
   const handleSaved = () => {
     setShowForm(false);
+    setShowBatchForm(false);
     setEditingQuestion(null);
     router.refresh();
   };
@@ -40,6 +43,7 @@ export function QuestionEditor({
     if (!confirm("이 문항을 삭제하시겠습니까?")) return;
     await fetch(`/api/questions/${questionId}`, { method: "DELETE" });
     setQuestions(questions.filter((q) => q.id !== questionId));
+    router.refresh();
   };
 
   const handleMoveUp = async (index: number) => {
@@ -57,6 +61,7 @@ export function QuestionEditor({
         orders: newQuestions.map((q, i) => ({ id: q.id, order_index: i })),
       }),
     });
+    router.refresh();
   };
 
   const handleMoveDown = async (index: number) => {
@@ -74,17 +79,18 @@ export function QuestionEditor({
         orders: newQuestions.map((q, i) => ({ id: q.id, order_index: i })),
       }),
     });
+    router.refresh();
   };
 
   return (
     <div className="space-y-4">
       {questions.map((question, index) => (
-        <Card key={question.id}>
+        <Card key={question.id} className="border-0 shadow-sm">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">
-                  {index + 1}.
+                <span className="w-7 h-7 rounded-full bg-violet-100 text-violet-700 flex items-center justify-center text-sm font-semibold">
+                  {index + 1}
                 </span>
                 <CardTitle className="text-base">{question.title}</CardTitle>
               </div>
@@ -93,7 +99,7 @@ export function QuestionEditor({
                   {typeLabels[question.type]}
                 </Badge>
                 {question.required && (
-                  <Badge variant="destructive" className="text-xs">
+                  <Badge className="text-xs bg-rose-100 text-rose-700 hover:bg-rose-100">
                     필수
                   </Badge>
                 )}
@@ -124,6 +130,7 @@ export function QuestionEditor({
                 onClick={() => {
                   setEditingQuestion(question);
                   setShowForm(true);
+                  setShowBatchForm(false);
                 }}
               >
                 수정
@@ -141,7 +148,7 @@ export function QuestionEditor({
         </Card>
       ))}
 
-      {showForm ? (
+      {showForm && (
         <QuestionForm
           surveyId={surveyId}
           question={editingQuestion}
@@ -153,10 +160,37 @@ export function QuestionEditor({
             setEditingQuestion(null);
           }}
         />
-      ) : (
-        <Button onClick={() => setShowForm(true)} variant="outline" className="w-full">
-          + 문항 추가
-        </Button>
+      )}
+
+      {showBatchForm && (
+        <BatchQuestionForm
+          surveyId={surveyId}
+          startOrderIndex={questions.length}
+          allQuestions={questions}
+          onSaved={handleSaved}
+          onCancel={() => setShowBatchForm(false)}
+        />
+      )}
+
+      {!showForm && !showBatchForm && (
+        <div className="flex gap-2">
+          <Button
+            onClick={() => {
+              setEditingQuestion(null);
+              setShowForm(true);
+            }}
+            variant="outline"
+            className="flex-1"
+          >
+            + 문항 1개 추가
+          </Button>
+          <Button
+            onClick={() => setShowBatchForm(true)}
+            className="flex-1 gradient-bg text-white hover:opacity-90"
+          >
+            + 여러 문항 한번에 추가
+          </Button>
+        </div>
       )}
     </div>
   );
