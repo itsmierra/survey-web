@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { DashboardStats } from "@/components/admin/DashboardStats";
 import { RealtimeResponseCount } from "@/components/admin/RealtimeResponseCount";
+import { TeamResponseStatus } from "@/components/admin/TeamResponseStatus";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default async function AdminDashboardPage() {
@@ -26,12 +27,35 @@ export default async function AdminDashboardPage() {
     })
   );
 
+  // Fetch active surveys with questions + respondents for team status
+  const activeSurveyList = (surveys || []).filter((s) => s.status === "active");
+  const activeSurveysWithDetails = await Promise.all(
+    activeSurveyList.map(async (survey) => {
+      const [{ data: questions }, { data: respondents }] = await Promise.all([
+        supabase
+          .from("questions")
+          .select("*")
+          .eq("survey_id", survey.id)
+          .order("order_index"),
+        supabase
+          .from("respondents")
+          .select("*, answers(*)")
+          .eq("survey_id", survey.id),
+      ]);
+      return {
+        ...survey,
+        questions: questions || [],
+        respondents: respondents || [],
+      };
+    })
+  );
+
   const totalSurveys = surveys?.length || 0;
   const totalResponses = surveyStats.reduce(
     (sum, s) => sum + s.responseCount,
     0
   );
-  const activeSurveys = surveys?.filter((s) => s.status === "active").length || 0;
+  const activeSurveys = activeSurveyList.length;
 
   return (
     <div className="space-y-6">
@@ -87,6 +111,8 @@ export default async function AdminDashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      <TeamResponseStatus surveys={activeSurveysWithDetails} />
 
       <DashboardStats surveyStats={surveyStats} />
     </div>
