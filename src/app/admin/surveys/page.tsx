@@ -18,19 +18,24 @@ export default async function AdminSurveysPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">설문 관리</h1>
         <Link href="/admin/surveys/new">
-          <Button>새 설문 만들기</Button>
+          <Button className="gradient-bg text-white hover:opacity-90 shadow-md">
+            + 새 설문 만들기
+          </Button>
         </Link>
       </div>
 
       {(!surveys || surveys.length === 0) && (
-        <p className="text-center text-muted-foreground py-8">
-          등록된 설문이 없습니다.
-        </p>
+        <div className="text-center py-16">
+          <div className="text-5xl mb-4">&#128203;</div>
+          <p className="text-muted-foreground">
+            등록된 설문이 없습니다.
+          </p>
+        </div>
       )}
 
       <div className="grid gap-4">
         {surveys?.map((survey) => (
-          <Card key={survey.id}>
+          <Card key={survey.id} className="card-hover border-0 shadow-sm hover:shadow-md">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base">{survey.title}</CardTitle>
@@ -40,12 +45,12 @@ export default async function AdminSurveysPage() {
             <CardContent>
               <div className="flex items-center gap-3 text-sm text-muted-foreground">
                 <Badge
-                  variant={
+                  className={
                     survey.status === "active"
-                      ? "default"
+                      ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100"
                       : survey.status === "draft"
-                      ? "secondary"
-                      : "destructive"
+                      ? "bg-slate-100 text-slate-600 hover:bg-slate-100"
+                      : "bg-red-100 text-red-700 hover:bg-red-100"
                   }
                 >
                   {survey.status === "active"
