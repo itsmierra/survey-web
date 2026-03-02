@@ -6,38 +6,54 @@ import { MultipleChoiceQuestion } from "./questions/MultipleChoiceQuestion";
 import { TextQuestion } from "./questions/TextQuestion";
 import { RatingQuestion } from "./questions/RatingQuestion";
 import { DateTimeQuestion } from "./questions/DateTimeQuestion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 
 interface QuestionRendererProps {
   question: Question;
   value: AnswerValue | undefined;
   onChange: (value: AnswerValue) => void;
+  index: number;
 }
 
 export function QuestionRenderer({
   question,
   value,
   onChange,
+  index,
 }: QuestionRendererProps) {
+  const isAnswered = value !== undefined;
+
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <div className="flex items-start gap-2">
-          <CardTitle className="text-base flex-1">
-            {question.title}
-          </CardTitle>
-          {question.required && (
-            <Badge variant="destructive" className="text-xs shrink-0">
-              필수
-            </Badge>
-          )}
+    <div
+      className="animate-fade-in-up glass-card rounded-2xl shadow-sm overflow-hidden"
+      style={{ animationDelay: `${index * 60}ms` }}
+    >
+      <div className="px-5 pt-5 pb-3">
+        <div className="flex items-start gap-3">
+          <span
+            className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold shrink-0 transition-colors ${
+              isAnswered
+                ? "gradient-bg text-white shadow-sm"
+                : "bg-violet-100 text-violet-600 dark:bg-violet-900 dark:text-violet-400"
+            }`}
+          >
+            {index + 1}
+          </span>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-base font-semibold leading-snug">
+              {question.title}
+              {question.required && (
+                <span className="text-rose-500 ml-1">*</span>
+              )}
+            </h3>
+            {question.description && (
+              <p className="text-sm text-muted-foreground mt-1">
+                {question.description}
+              </p>
+            )}
+          </div>
         </div>
-        {question.description && (
-          <p className="text-sm text-muted-foreground">{question.description}</p>
-        )}
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="px-5 pb-5">
         {question.type === "single_choice" && question.options && (
           <SingleChoiceQuestion
             options={question.options}
@@ -70,7 +86,7 @@ export function QuestionRenderer({
             onChange={(datetime) => onChange({ datetime })}
           />
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

@@ -14,7 +14,7 @@ export function TextQuestion({ value, onChange }: TextQuestionProps) {
       onChange={(e) => onChange(e.target.value)}
       placeholder="답변을 입력해주세요..."
       rows={3}
-      className="text-base"
+      className="text-sm rounded-xl border-slate-200 bg-slate-50 focus:bg-white transition-colors resize-none dark:border-slate-700 dark:bg-slate-800 dark:focus:bg-slate-700"
     />
   );
 }
