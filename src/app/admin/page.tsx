@@ -31,7 +31,7 @@ export default async function AdminDashboardPage() {
   const activeSurveyList = (surveys || []).filter((s) => s.status === "active");
   const activeSurveysWithDetails = await Promise.all(
     activeSurveyList.map(async (survey) => {
-      const [{ data: questions }, { data: respondents }] = await Promise.all([
+      const [questionsResult, respondentsResult] = await Promise.all([
         supabase
           .from("questions")
           .select("*")
@@ -42,10 +42,19 @@ export default async function AdminDashboardPage() {
           .select("*, answers(*)")
           .eq("survey_id", survey.id),
       ]);
+
+      if (questionsResult.error) console.error("[TeamStatus] questions error:", questionsResult.error);
+      if (respondentsResult.error) console.error("[TeamStatus] respondents error:", respondentsResult.error);
+
+      const questions = questionsResult.data || [];
+      const respondents = respondentsResult.data || [];
+
+      console.log(`[TeamStatus] survey="${survey.title}" questions=${questions.length} respondents=${respondents.length} teamQ=${questions.filter((q: { type: string; title: string }) => q.title.includes("팀") && (q.type === "single_choice" || q.type === "multiple_choice")).length}`);
+
       return {
         ...survey,
-        questions: questions || [],
-        respondents: respondents || [],
+        questions,
+        respondents,
       };
     })
   );
