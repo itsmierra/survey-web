@@ -47,7 +47,7 @@ export default async function HomePage() {
                   </Badge>
                 </div>
                 {survey.description && (
-                  <CardDescription>{survey.description}</CardDescription>
+                  <CardDescription className="whitespace-pre-line">{survey.description}</CardDescription>
                 )}
               </CardHeader>
             </Card>
