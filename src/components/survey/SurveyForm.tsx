@@ -150,8 +150,10 @@ export function SurveyForm({ survey }: SurveyFormProps) {
       }
 
       router.push(`/survey/${survey.id}/complete`);
-    } catch {
-      setSubmitError("제출 중 오류가 발생했습니다. 다시 시도해주세요.");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error("[SurveyForm] submit error:", message);
+      setSubmitError(`제출 중 오류가 발생했습니다: ${message}`);
       setSubmitting(false);
     }
   };
