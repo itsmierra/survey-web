@@ -154,6 +154,7 @@ export function QuestionEditor({
 
       {showForm && (
         <QuestionForm
+          key={editingQuestion?.id ?? "new"}
           surveyId={surveyId}
           question={editingQuestion}
           orderIndex={editingQuestion?.order_index ?? questions.length}
