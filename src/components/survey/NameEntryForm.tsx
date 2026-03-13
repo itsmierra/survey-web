@@ -30,7 +30,7 @@ export function NameEntryForm({ surveyTitle, onSubmit, error }: NameEntryFormPro
             </svg>
           </div>
           <h2 className="text-xl font-bold text-white">{surveyTitle}</h2>
-          <p className="text-sm text-white/80 mt-2">설문에 참여해주셔서 감사합니다</p>
+          <p className="text-sm text-white/80 mt-2">설문에 참여해주셔서 감사합니다!</p>
         </div>
         <div className="px-6 py-6">
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -42,7 +42,7 @@ export function NameEntryForm({ surveyTitle, onSubmit, error }: NameEntryFormPro
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="홍길동"
+                placeholder="김충현"
                 required
                 autoFocus
                 className="h-12 rounded-xl border-slate-200 bg-slate-50 focus:bg-white transition-colors text-base dark:border-slate-700 dark:bg-slate-800 dark:focus:bg-slate-700"

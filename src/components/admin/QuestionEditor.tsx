@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,6 +29,10 @@ export function QuestionEditor({
   const router = useRouter();
   const [questions, setQuestions] = useState<Question[]>(initialQuestions);
   const [showForm, setShowForm] = useState(false);
+
+  useEffect(() => {
+    setQuestions(initialQuestions);
+  }, [initialQuestions]);
   const [showBatchForm, setShowBatchForm] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
 

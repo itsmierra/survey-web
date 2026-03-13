@@ -87,21 +87,26 @@ export function QuestionForm({
         : null,
     };
 
-    if (question) {
-      await fetch(`/api/questions/${question.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-    } else {
-      await fetch("/api/questions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-    }
+    const res = question
+      ? await fetch(`/api/questions/${question.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        })
+      : await fetch("/api/questions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
 
     setLoading(false);
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      alert(`저장 실패: ${data?.error || res.statusText}`);
+      return;
+    }
+
     onSaved();
   };
 
